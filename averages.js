@@ -93,6 +93,11 @@ function median(values) {
 	return arr[arr.length / 2 | 0]
 }
 
+function avg(values) {
+    const sum = values.reduce((c, acc) => acc + c)
+    return sum / values.length
+}
+
 function medianAlg(size, seq) {
     const arr = [].concat(...seq.last(size))
     return median(arr)

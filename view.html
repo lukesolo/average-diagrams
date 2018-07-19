@@ -7,6 +7,7 @@
     <script src="averages.js"></script>
 </head>
 <body style="overflow:hidden;">
+
     <div>
         <div style="display:inline-block;width:40%;">
         <div style="display: inline-block;">
@@ -32,45 +33,26 @@
  
         <div style="display: inline-block; vertical-align: top">
 
+            avg in block <br>
+            <input type="radio" name="block-avg" value="median" checked="checked" onclick="update()"> Median<br>
+            <input type="radio" name="block-avg" value="avg" onclick="update()"> AVG<br>
+
+            window <input id="sliding-window" type="number" value="4" style="width: 50px;" onchange="update()" />
+            <br>
+
+            α (0 - 100) <input id="alpha" type="number" value="62" style="width: 40px;" onchange="update()" />
+            <br>
+
             <input type="radio" name="alg" value="median" checked="checked" onclick="update()"> Median<br>
             <input type="radio" name="alg" value="sma" onclick="update()"> SMA<br>
             <input type="radio" name="alg" value="wma" onclick="update()"> WMA<br>
             <input type="radio" name="alg" value="ema" onclick="update()"> EMA<br>
             <input type="radio" name="alg" value="ema2" onclick="update()"> EMA2<br>
             <input type="radio" name="alg" value="ema3" onclick="update()"> EMA3<br>
-<!-- 
-            <div>
-                <p>median</p>
-                <textarea id="median"></textarea>
-            </div>
-
-            <div>
-                <p>sma</p>
-                <textarea id="sma"></textarea>
-            </div>
-
-            <div>
-                <p>wma</p>
-                <textarea id="wma"></textarea>
-            </div>
-
-            <div>
-                <p>ema</p>
-                <textarea id="ema"></textarea>
-            </div>
-
-            <div>
-                <p>ema2</p>
-                <textarea id="ema2"></textarea>
-            </div>
-    
-            <div>
-                <p>ema3</p>
-                <textarea id="ema3"></textarea>
-            </div> -->
 
         </div>
         </div>
+
         <div style="display:inline-block; width:59%; height: 100vh;">
         <div style="width:75%;"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
             <canvas id="canvas" width="1530" height="1580" class="chartjs-render-monitor" style="display: block; width: 1430px; height: 715px;"></canvas>
@@ -147,17 +129,26 @@
             };
     
             window.onload = function() {
+                if (!window.median) {
+                    fetch('https://raw.githubusercontent.com/lukesolo/average-diagrams/master/averages.js')
+                        .then(req => req.text())
+                        .then(eval)
+                }
+
                 var ctx = document.getElementById('canvas').getContext('2d');
                 window.myLine = new Chart(ctx, config);
             };
 
             function update() {
                 const seq = readNumbers()
+                
+                const blockAvgElems = Array.from(document.getElementsByName('block-avg'))
+                const blockAvgName = blockAvgElems.find(e => e.checked).value
+                const blockAvg = blockAvgName === 'median' ? median : avg
 
                 const algElems = Array.from(document.getElementsByName('alg'))
                 const algName = algElems.find(e => e.checked).value
-                const alg = setAlg(algName)
-                
+                const alg = setAlg(blockAvg, algName)
 
                 console.log(algName)
                 const avgs = calcAvg(seq, alg)
@@ -182,16 +173,21 @@
                 window.myLine.update()
             }
 
-            function setAlg(name) {
+            function setAlg(blockAvg, name) {
+
+                const slidingWindow = parseInt(document.getElementById('sliding-window').value)
+
                 const golden = 0.62
+                let alpha = golden
+                alpha = parseInt(document.getElementById('alpha').value) / 100
 
                 switch (name) {
-                    case 'median': return medianAlg.bind(null, 4)
-                    case 'sma': return sma.bind(null, median, 4)
-                    case 'wma': return wma.bind(null, median, 4)
-                    case 'ema': return ema.bind(null, median, golden)
-                    case 'ema2': return emap.bind(null, median, 2, golden)
-                    case 'ema3': return emap.bind(null, median, 3, golden)
+                    case 'median': return medianAlg.bind(null, slidingWindow)
+                    case 'sma': return sma.bind(null, blockAvg, slidingWindow)
+                    case 'wma': return wma.bind(null, blockAvg, slidingWindow)
+                    case 'ema': return ema.bind(null, blockAvg, alpha)
+                    case 'ema2': return emap.bind(null, blockAvg, 2, alpha)
+                    case 'ema3': return emap.bind(null, blockAvg, 3, alpha)
                     default: return setAlg('median')
                 }
             }
