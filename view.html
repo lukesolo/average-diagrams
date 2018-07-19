@@ -69,7 +69,8 @@
                 { x: 2, y: 20 },
             ];
             let xLength = Array(dataLine.length).keys();
-            let yLength = Math.max.apply(null, dataDot.map(item => item.y).concat(dataLine))+1;
+            let yLength = Math.max.apply(null, dataDot.map(item => item.y).concat(dataLine)) + 1;
+            
             let config = {
                 type: 'line',
                 data: {
@@ -170,6 +171,7 @@
                 const yLength = Math.max.apply(null, dataDot.map(item => item.y).concat(avgs)) + 1
                 config.data.labels = [...xLength]
                 config.options.scales.yAxes[0].ticks.max = yLength
+                config.options.scales.yAxes[0].ticks.stepSize = yLength / 10
                 window.myLine.update()
             }
 
