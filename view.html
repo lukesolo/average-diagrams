@@ -37,10 +37,12 @@
             <input type="radio" name="block-avg" value="median" checked="checked" onclick="update()"> Median<br>
             <input type="radio" name="block-avg" value="avg" onclick="update()"> AVG<br>
 
-            window <input id="sliding-window" type="number" value="4" style="width: 50px;" onchange="update()" />
+            window <span id="window-text">4</span>
+            <input id="sliding-window" type="range" min="1" max="8" value="4" style="width: 110px;" onchange="update()" />
             <br>
 
-            α (0 - 100) <input id="alpha" type="number" value="62" style="width: 40px;" onchange="update()" />
+            α <span id="alpha-text">0.62</span>
+            <input id="alpha" type="range" min="0" max="100" value="62" style="width: 110px;" onchange="update()" />
             <br>
 
             <input type="radio" name="alg" value="median" checked="checked" onclick="update()"> Median<br>
@@ -142,6 +144,8 @@
 
             function update() {
                 const seq = readNumbers()
+
+                document.getElementById('sliding-window').max = seq.blocks.length
                 
                 const blockAvgElems = Array.from(document.getElementsByName('block-avg'))
                 const blockAvgName = blockAvgElems.find(e => e.checked).value
@@ -151,7 +155,6 @@
                 const algName = algElems.find(e => e.checked).value
                 const alg = setAlg(blockAvg, algName)
 
-                console.log(algName)
                 const avgs = calcAvg(seq, alg)
                 console.log(avgs);
 
@@ -161,13 +164,13 @@
 
                 const dataDot = []
                 seq.blocks.forEach((b, i) => b.forEach(v => dataDot.push({
-                    x: i, y: v,
+                    x: i + 1, y: v,
                 })));
-                
-                config.data.datasets[0].data = avgs
+
+                config.data.datasets[0].data = [0, ...avgs]
                 config.data.datasets[1].data = dataDot
 
-                const xLength = Array(avgs.length).keys()
+                const xLength = Array(avgs.length + 1).keys()
                 const yLength = Math.max.apply(null, dataDot.map(item => item.y).concat(avgs)) + 1
                 config.data.labels = [...xLength]
                 config.options.scales.yAxes[0].ticks.max = yLength
@@ -176,12 +179,13 @@
             }
 
             function setAlg(blockAvg, name) {
-
                 const slidingWindow = parseInt(document.getElementById('sliding-window').value)
+                document.getElementById('window-text').innerHTML = slidingWindow
 
                 const golden = 0.62
                 let alpha = golden
                 alpha = parseInt(document.getElementById('alpha').value) / 100
+                document.getElementById('alpha-text').innerHTML = alpha.toFixed(2)
 
                 switch (name) {
                     case 'median': return medianAlg.bind(null, slidingWindow)
