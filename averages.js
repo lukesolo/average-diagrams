@@ -12,7 +12,7 @@ setTimeout(() => {
 
     writeNumbers(seq)
 
-    restart()
+    // restart()
 }, 0)
 
 function writeNumbers(seq) {
@@ -56,6 +56,16 @@ function run(elemId, seq, alg) {
         const intCom = com | 0
         elem.value += `${intCom} ${bcPart.toString()}\n`
     }
+}
+
+function calcAvg(seq, alg) {
+    const arr = []
+    for (let i = 0; i < seq.blocks.length; i++) {
+        const bcPart = seq.until(i + 1)
+        const com = alg(bcPart)
+        arr.push(com | 0)
+    }
+    return arr
 }
 
 function restart() {
