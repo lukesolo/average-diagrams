@@ -32,6 +32,13 @@
  
         <div style="display: inline-block; vertical-align: top">
 
+            <input type="radio" name="alg" value="median" checked="checked" onclick="update()"> Median<br>
+            <input type="radio" name="alg" value="sma" onclick="update()"> SMA<br>
+            <input type="radio" name="alg" value="wma" onclick="update()"> WMA<br>
+            <input type="radio" name="alg" value="ema" onclick="update()"> EMA<br>
+            <input type="radio" name="alg" value="ema2" onclick="update()"> EMA2<br>
+            <input type="radio" name="alg" value="ema3" onclick="update()"> EMA3<br>
+<!-- 
             <div>
                 <p>median</p>
                 <textarea id="median"></textarea>
@@ -60,7 +67,7 @@
             <div>
                 <p>ema3</p>
                 <textarea id="ema3"></textarea>
-            </div>
+            </div> -->
 
         </div>
         </div>
@@ -147,10 +154,13 @@
             function update() {
                 const seq = readNumbers()
 
-                const golden = 0.62
+                const algElems = Array.from(document.getElementsByName('alg'))
+                const algName = algElems.find(e => e.checked).value
+                const alg = setAlg(algName)
+                
 
-                console.log('median')
-                const avgs = calcAvg(seq, medianAlg.bind(null, 4))
+                console.log(algName)
+                const avgs = calcAvg(seq, alg)
                 console.log(avgs);
 
                 if (config.data.datasets.length === 0) {
@@ -170,6 +180,20 @@
                 config.data.labels = [...xLength]
                 config.options.scales.yAxes[0].ticks.max = yLength
                 window.myLine.update()
+            }
+
+            function setAlg(name) {
+                const golden = 0.62
+
+                switch (name) {
+                    case 'median': return medianAlg.bind(null, 4)
+                    case 'sma': return sma.bind(null, median, 4)
+                    case 'wma': return wma.bind(null, median, 4)
+                    case 'ema': return ema.bind(null, median, golden)
+                    case 'ema2': return emap.bind(null, median, 2, golden)
+                    case 'ema3': return emap.bind(null, median, 3, golden)
+                    default: return setAlg('median')
+                }
             }
         </script>
     </div>
