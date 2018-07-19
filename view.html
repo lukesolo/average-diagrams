@@ -3,13 +3,55 @@
     <script src="averages.js"></script>
 </head>
 <body>
-    <textarea id="numbers" style="width: 300px; height: 500px;"></textarea>
     <div>
-        <button onclick="readNumbers()">parse</button>
-    </div>
-    <div>
-        <input id="gen-len" type="number" value="20" />
-        <input id="gen-dense" type="number" value="3" />
-        <button onclick="generate()">generate</button>
+        <div style="display: inline-block;">
+            <textarea id="numbers" style="width: 300px; height: 500px;"></textarea>
+            
+        <div>
+            <button onclick="restart()">restart</button>
+        </div>
+    
+        <div>
+            <input id="gen-len" type="number" value="20" />
+            <input id="gen-dense" type="number" value="3" />
+            <button onclick="generate()">generate</button>
+        </div>
+    
+        </div>
+ 
+        <div style="display: inline-block; vertical-align: top">
+
+            <div>
+                <p>median</p>
+                <textarea id="median"></textarea>
+            </div>
+
+            <div>
+                <p>sma</p>
+                <textarea id="sma"></textarea>
+            </div>
+
+            <div>
+                <p>wma</p>
+                <textarea id="wma"></textarea>
+            </div>
+
+            <div>
+                <p>ema</p>
+                <textarea id="ema"></textarea>
+            </div>
+
+            <div>
+                <p>ema2</p>
+                <textarea id="ema2"></textarea>
+            </div>
+    
+            <div>
+                <p>ema3</p>
+                <textarea id="ema3"></textarea>
+            </div>
+
+        </div>
+                                                                
     </div>
 </body>

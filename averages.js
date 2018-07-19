@@ -12,20 +12,7 @@ setTimeout(() => {
 
     writeNumbers(seq)
 
-    const golden = 0.62
-
-    console.log('median')
-    run(seq, medianAlg.bind(null, 4))
-    console.log('sma + median')
-    run(seq, sma.bind(null, median, 4))
-    console.log('wma + median')
-    run(seq, wma.bind(null, median, 4))
-    console.log('ema(golden) + median')
-    run(seq, ema.bind(null, median, golden))
-    console.log('ema2(golden) + median')
-    run(seq, emap.bind(null, median, 2, golden))
-    console.log('ema3(golden) + median')
-    run(seq, emap.bind(null, median, 3, golden))
+    restart()
 }, 0)
 
 function writeNumbers(seq) {
@@ -59,13 +46,35 @@ function generate() {
     writeNumbers(seq)
 }
 
-function run(seq, alg) {
-    for (let i = 1; i < seq.blocks.length; i++) {
-        const bcPart = seq.until(i)
+function run(elemId, seq, alg) {
+    const elem = document.getElementById(elemId)
+    elem.value = ''
+
+    for (let i = 0; i < seq.blocks.length; i++) {
+        const bcPart = seq.until(i + 1)
         const com = alg(bcPart)
         const intCom = com | 0
-        console.log(intCom, bcPart.toString())
+        elem.value += `${intCom} ${bcPart.toString()}\n`
     }
+}
+
+function restart() {
+    const seq = readNumbers()
+
+    const golden = 0.62
+
+    console.log('median')
+    run('median', seq, medianAlg.bind(null, 4))
+    console.log('sma + median')
+    run('sma', seq, sma.bind(null, median, 4))
+    console.log('wma + median')
+    run('wma', seq, wma.bind(null, median, 4))
+    console.log('ema(golden) + median')
+    run('ema', seq, ema.bind(null, median, golden))
+    console.log('ema2(golden) + median')
+    run('ema2', seq, emap.bind(null, median, 2, golden))
+    console.log('ema3(golden) + median')
+    run('ema3', seq, emap.bind(null, median, 3, golden))
 }
 
 function median(values) {
