@@ -48,6 +48,17 @@ function readNumbers() {
     return seq
 }
 
+function generate() {
+    const lenElem = document.getElementById('gen-len')
+    const denseElem = document.getElementById('gen-dense')
+    
+    const len = parseInt(lenElem.value)
+    const dense = parseInt(denseElem.value)
+    const seq = Sequence.generate(len, dense)
+
+    writeNumbers(seq)
+}
+
 function run(seq, alg) {
     for (let i = 1; i < seq.blocks.length; i++) {
         const bcPart = seq.until(i)
@@ -125,4 +136,16 @@ Sequence.prototype.until = function(until) {
 
 Sequence.prototype.last = function(n) {
     return this.blocks.slice(-n)
+}
+
+Sequence.generate = function(len, dense) {
+    const blocks = new Array(len).fill(0).map(() =>
+        new Array(dense).fill(0).map(() => getRandom(1, 100)))
+
+    return new Sequence(blocks)
+}
+
+function getRandom(min, max) {
+    const diff = max - min + 1
+    return Math.floor((Math.random() * diff) + min)
 }
