@@ -146,6 +146,17 @@ function emap(avg, p, a, seq) {
     return first + second
 }
 
+function *emaGen(avg, a, seq) {
+    const avgs = seq.blocks.slice().map(avg)
+
+    let current = avgs[0]
+    yield current
+    for (let i = 1; i < avgs.length; i++) {
+        current = a * current + (1 - a) * avgs[i]
+        yield current
+    }
+}
+
 function Sequence(arr) {
     this.blocks = arr
 }
