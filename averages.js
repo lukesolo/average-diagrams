@@ -75,6 +75,8 @@ function restart() {
 
     console.log('median')
     run('median', seq, medianAlg.bind(null, 4))
+    console.log('median each block')
+    run('median each block', seq, medianEachBlock.bind(null, median, 4))
     console.log('sma + median')
     run('sma', seq, sma.bind(null, median, 4))
     console.log('wma + median')
@@ -100,6 +102,11 @@ function avg(values) {
 
 function medianAlg(size, seq) {
     const arr = [].concat(...seq.last(size))
+    return median(arr)
+}
+
+function medianEachBlock(avg, size, seq) {
+    const arr = seq.last(size).map(avg)
     return median(arr)
 }
 

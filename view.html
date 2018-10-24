@@ -33,24 +33,59 @@
  
         <div style="display: inline-block; vertical-align: top">
 
-            avg in block <br>
-            <input type="radio" name="block-avg" value="median" checked="checked" onclick="update()"> Median<br>
-            <input type="radio" name="block-avg" value="avg" onclick="update()"> AVG<br>
 
-            window <span id="window-text">4</span>
-            <input id="sliding-window" type="range" min="1" max="8" value="4" style="width: 110px;" onchange="update()" />
+            <span title="сколько последних блоков участвует в расчёте">
+                window <span id="window-text">4</span>
+                <input id="sliding-window" type="range" min="1" max="8" value="4" style="width: 110px;" onchange="update()" />
+            </span>
             <br>
 
-            α <span id="alpha-text">0.62</span>
-            <input id="alpha" type="range" min="0" max="100" value="62" style="width: 110px;" onchange="update()" />
+            <span title="медиана среди всех транзакций блоков">
+                <input type="radio" name="alg" value="median" checked="checked" onclick="update()"> Median
+            </span>
+            <br>
+            
+            <div style="border: solid 1px black">
+                avg in block <br>
+                <input type="radio" name="block-avg" value="median" checked="checked" onclick="update()"> Median<br>
+                <input type="radio" name="block-avg" value="avg" onclick="update()"> AVG<br>
+            </div>
+
+            <span title="Медиана средних в блоке">
+                <input type="radio" name="alg" value="medianEachBlock" onclick="update()"> Median each block
+            </span>
             <br>
 
-            <input type="radio" name="alg" value="median" checked="checked" onclick="update()"> Median<br>
-            <input type="radio" name="alg" value="sma" onclick="update()"> SMA<br>
-            <input type="radio" name="alg" value="wma" onclick="update()"> WMA<br>
-            <input type="radio" name="alg" value="ema" onclick="update()"> EMA<br>
-            <input type="radio" name="alg" value="ema2" onclick="update()"> EMA2<br>
-            <input type="radio" name="alg" value="ema3" onclick="update()"> EMA3<br>
+            <span title="Простое скользящее среднее">
+                <input type="radio" name="alg" value="sma" onclick="update()"> SMA
+            </span>
+            <br>
+
+            <span title="Взвешенные скользящие средние">
+                <input type="radio" name="alg" value="wma" onclick="update()"> WMA
+            </span>
+            <br>
+
+            <span title="сглаживающая константа">
+                α <span id="alpha-text">0.62</span>
+                <input id="alpha" type="range" min="0" max="100" value="62" style="width: 110px;" onchange="update()" />
+            </span>
+            <br>
+
+            <span title="Экспоненциально скользящее среднее">
+                <input type="radio" name="alg" value="ema" onclick="update()"> EMA
+            </span>
+            <br>
+
+            <span title="Экспоненциально скользящее среднее второго порядка">
+                <input type="radio" name="alg" value="ema2" onclick="update()"> EMA2
+            </span>
+            <br>
+
+            <span title="Экспоненциально скользящее среднее третьего порядка">
+                <input type="radio" name="alg" value="ema3" onclick="update()"> EMA3<br>
+            </span>
+            <br>
 
         </div>
         </div>
@@ -189,12 +224,13 @@
 
                 switch (name) {
                     case 'median': return medianAlg.bind(null, slidingWindow)
+                    case 'medianEachBlock': return medianEachBlock.bind(null, blockAvg, slidingWindow)
                     case 'sma': return sma.bind(null, blockAvg, slidingWindow)
                     case 'wma': return wma.bind(null, blockAvg, slidingWindow)
                     case 'ema': return ema.bind(null, blockAvg, alpha)
                     case 'ema2': return emap.bind(null, blockAvg, 2, alpha)
                     case 'ema3': return emap.bind(null, blockAvg, 3, alpha)
-                    default: return setAlg('median')
+                    default: return setAlg(blockAvg, 'median')
                 }
             }
         </script>
